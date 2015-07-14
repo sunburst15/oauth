@@ -1,0 +1,57 @@
+<html>
+<head>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer></script>
+</head>
+<body>
+    <div id="signinButton">
+        <span class="g-signin"
+         data-scope="openid email"
+         data-clientid="610142236637-7549p8joop1363bq2a9krj76vn15vi50.apps.googleusercontent.com"
+         data-redirecturi="postmessage"
+         data-accesstype="offline"
+         data-cookiepolicy="single_host_origin"
+         data-callback="signInCallback"
+         data-approvalprompt="force">
+        </span>
+    </div>
+    <div id="result">
+    </div>
+    <script>
+    // Step 4: make a callback method
+    function signInCallback(authResult) {
+        if (authResult['code']) {
+            // hide the sign-in button as already authorized
+            $('#signinbutton').attr('style', 'display: none');
+            // send the one-time-use code that google gave to the client
+            // to the server. if the suver response, write a 'login successful'
+            // message to the web page and then redirect back to the main
+            // restaurants page
+            $.ajax({
+                type: 'POST',
+                url: '/gconnect?state={{STATE}}',
+                processData: false,
+                contentType: 'application/octet-stream; charset=utf-8',
+                data: authResult['code'],
+                success: function(result) {
+                    if (result) {
+                        $('#result').html('Login Successful!</br>' + result +
+                        '<br/>Redirecting...')
+                        setTimeout(function() {
+                            window.location.href="/restaurant";
+                        }, 4000);
+                    } else if (authResult['error']) {
+                        console.log('There was an error: ' + authResult['error']);
+                    } else {
+                        $('#result').html('Failed to make a server-side call. Check your configuration and console');
+                    }
+                }
+            });
+
+        } else {
+            $('#result').html('No authResult["code"]');
+        }
+    }
+    </script>
+</body>
+</html>
