@@ -8,7 +8,6 @@ import httplib2
 class OAuthError(Exception):
     '''Error class for the google OAuth flow.
     '''
-
     def __init__(self, cause):
         self.cause = cause
 
